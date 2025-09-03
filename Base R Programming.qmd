@@ -1,0 +1,113 @@
+---
+title: "Base R Programming"
+format: html
+---
+
+# Task 1
+
+First we will create the vector for the pre-treatment and post-treatment:
+
+```{r}
+pre_bp <- c(120, 151, 125, 126, 115, 132, 132, 129, 134, 139, 127, 122, 127, 135, 133, 128, 147, 138, 140, 132)
+post_bp <- c(127, 145, 135, 122, 115, 122, 123, 126, 126, 129, 132, 146, 120, 114, 121, 120, 128, 120, 133, 115)
+```
+
+Next, we create the names and assign the names to the vectors:
+
+```{r}
+patient <- paste("Subject", 1:20, sep = "_")
+names(pre_bp) <- patient
+names(post_bp) <- patient
+```
+
+Now we can subtract the two vectors to get the difference for each patient:
+```{r}
+diff_bp <- pre_bp - post_bp
+```
+
+Next, we are tasked with calculating the average:
+```{r}
+avg <- mean(diff_bp)
+print(avg)
+```
+
+Let's also find out which patients experienced a drop in blood pressure. We can achieve this by finding the indices of values that are greater than 0:
+```{r}
+print(which(diff_bp > 0))
+```
+
+Next, to create a subset of patients that experienced a positive change, we can filter with a Boolean:
+```{r}
+pos <- diff_bp[diff_bp > 0]
+```
+
+Now, we can simply take the mean to get the average decrease of those that experienced a decrease in blood pressure:
+```{r}
+pos_avg <- mean(pos)
+print(pos_avg)
+```
+
+# Task 2
+First, let's create our data frame:
+```{r}
+bp_df <- data.frame(patient, pre_bp, post_bp, diff_bp, row.names = NULL)
+bp_df
+```
+
+Now, we can take a subset of those with negative blood pressure changes
+```{r}
+neg_df <- bp_df[bp_df$diff_bp < 0, ]
+neg_df
+```
+
+Now, we can add a column if the post-treatment blood pressure is below 120:
+```{r}
+bp_df$under_120 <- bp_df$post_bp < 120
+```
+
+Finally, we can print the data frame:
+```{r}
+knitr::kable(bp_df)
+```
+
+# Task 3
+First, let's create the data frame. We will follow similar steps as we did prior:
+```{r}
+placebo_pre_bp <- c(138, 135, 147, 117, 152, 134, 114, 121, 131, 130)
+placebo_post_bp <- c(105, 136, 123, 130, 134, 143, 135, 139, 120, 124)
+placebo_diff_bp <- placebo_pre_bp - placebo_post_bp 
+placebo_patient <- paste("Subject", 1:10, sep = "_")
+placebo_df <- data.frame(placebo_patient, placebo_pre_bp, placebo_post_bp, placebo_diff_bp, row.names = NULL)
+placebo_df$under_120 <- placebo_post_bp < 120
+```
+
+Also, to match the naming convention of the prior data frame, let's rename the columns:
+```{r}
+treatment_df <- bp_df
+colnames(placebo_df) <- colnames(treatment_df)
+```
+
+Now, we have two data frames, one named treatment_df and the other named placebo_df. We can store it in a list and naming the elements of the list treatment and placebo respectively:
+```{r}
+data <- list(treatment = treatment_df, placebo = placebo_df)
+```
+
+Now, let's access the first element using three different types of syntax covered in the notes. First, we can use single brackets:
+```{r}
+data[1]
+```
+
+Second, we can use double brackets:
+```{r}
+data[[1]]
+```
+
+Finally, we can call it by name:
+```{r}
+data$treatment
+```
+
+Next, let's access the pre_bp column of the placebo data in one line of code:
+```{r}
+data$placebo$pre_bp
+```
